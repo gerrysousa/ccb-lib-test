@@ -32,6 +32,10 @@ Add to pom.xml
 Gradle and other build tools are also supported.
 See https://jitpack.io/#gerrysousa/ccb-lib-test/0.0.1 for details.
 
+### Example using the ccb-lib-test
+
+- https://github.com/gerrysousa/example-using-ccb-lib-test
+
 ### REST options examples
 
 ```

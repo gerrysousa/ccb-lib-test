@@ -1,5 +1,37 @@
 # API Tests with Cucumber and Chaintest Report
 
+### How to
+
+To get a Git project into your build:
+
+#### Step 1. Add the JitPack repository to your build file
+
+Add to pom.xml
+
+```xml
+
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
+
+#### Step 2. Add the dependency
+
+```xml
+
+<dependency>
+  <groupId>com.github.gerrysousa</groupId>
+  <artifactId>ccb-lib-test</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
+Gradle and other build tools are also supported.
+See https://jitpack.io/#gerrysousa/ccb-lib-test/0.0.1 for details.
+
 ### REST options examples
 
 ```

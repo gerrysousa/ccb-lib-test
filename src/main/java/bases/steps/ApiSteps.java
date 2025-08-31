@@ -29,66 +29,60 @@ import java.util.Map;
 
 public class ApiSteps {
 
-  private RequestSpecification request;
-  private Response response;
-  private String baseUrl;
-  private String endpoint;
-  private String requestBody;
-  private Scenario scenario;
-  private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-  private PrintStream requestPrintStream = new PrintStream(outputStream);
-  private LogConfig logConfigRequest = new LogConfig(requestPrintStream, true);
+  public static RequestSpecification request;
+  public static Response response;
+  public static String baseUrl;
+  public static String endpoint;
+  public static String requestBody;
+  public static Scenario scenario;
+  public static ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+  public static PrintStream requestPrintStream = new PrintStream(outputStream);
+  public static LogConfig logConfigRequest = new LogConfig(requestPrintStream, true);
 
   public ApiSteps() {
     request = given().relaxedHTTPSValidation().log().all();
     request.config(RestAssured.config().logConfig(logConfigRequest)).log().all();
   }
 
-  public static String getJsonAsString(final String filePath) throws IOException {
-    try {
-      return new String(Files.readAllBytes(Paths.get("src/test/resources/payloads/" + filePath)));
-    } catch (IOException e) {
-      throw new RuntimeException("Error reading payload file: " + filePath, e);
-    }
-  }
-
   @Before
-  public void before(final Scenario scenario) {
-    this.scenario = scenario;
+  public static void before(final Scenario scenario) {
+    request = given().relaxedHTTPSValidation().log().all();
+    request.config(RestAssured.config().logConfig(logConfigRequest)).log().all();
+    ApiSteps.scenario = scenario;
   }
 
   @Given("I set the base URL to {string}")
-  public void iSetTheBaseURLTo(final String baseUrl) {
+  public static void iSetTheBaseURLTo(final String baseUrl) {
     setBaseUrl(baseUrl);
   }
 
   @Given("I set the endpoint to {string}")
-  public void iSetTheEndpointTo(final String endpoint) {
+  public static void iSetTheEndpointTo(final String endpoint) {
     setEndpoint(endpoint);
   }
 
   @Given("I set the request body with JSON file {string}")
-  public void iSetTheRequestBodyWithFile(final String filePath) {
+  public static void iSetTheRequestBodyWithFile(final String filePath) {
     setJsonBody(filePath);
   }
 
   @Given("I set the headers")
-  public void iSetTheHeaders(final Map<String, String> headers) {
+  public static void iSetTheHeaders(final Map<String, String> headers) {
     setHeaders(headers);
   }
 
   @Given("I set the query params")
-  public void iSetTheQueryParameters(final Map<String, String> queryParams) {
+  public static void iSetTheQueryParameters(final Map<String, String> queryParams) {
     setQueryParams(queryParams);
   }
 
   @Given("I set the form params")
-  public void iSetTheFormParameters(final Map<String, String> formParams) {
+  public static void iSetTheFormParameters(final Map<String, String> formParams) {
     setFormParams(formParams);
   }
 
   @Given("I set the multiparts")
-  public void iSetTheMultiParts(final Map<String, String> multiparts) {
+  public static void iSetTheMultiParts(final Map<String, String> multiparts) {
     multiparts.forEach(
         (key, value) -> {
           File file = new File("src/test/resources/multipart/" + value);
@@ -97,12 +91,13 @@ public class ApiSteps {
   }
 
   @When("I send a {string} request to {string} endpoint {string}")
-  public void iSendRequest(final String httpMethod, final String baseUrl, final String endpoint) {
+  public static void iSendRequest(
+      final String httpMethod, final String baseUrl, final String endpoint) {
     response = sendRequest(httpMethod, baseUrl, endpoint);
   }
 
   @When("I send a {string} request to {string} endpoint {string} with query params")
-  public void iSendRequestWithQueryParams(
+  public static void iSendRequestWithQueryParams(
       final String httpMethod,
       final String baseUrl,
       final String endpoint,
@@ -111,13 +106,13 @@ public class ApiSteps {
   }
 
   @When("I send a {string} request to {string} endpoint {string} with form params")
-  public void iSendRequestWithFormParams(
+  public static void iSendRequestWithFormParams(
       final String httpMethod, final String baseUrl, final String endpoint) {
     response = sendRequest(httpMethod, baseUrl, endpoint);
   }
 
   @When("I send a {string} request to {string} endpoint {string} with headers")
-  public void iSendRequestWithHeaders(
+  public static void iSendRequestWithHeaders(
       final String httpMethod,
       final String baseUrl,
       final String endpoint,
@@ -126,20 +121,20 @@ public class ApiSteps {
   }
 
   @When("I send a {string} request to {string} endpoint {string} with multiparts")
-  public void iSendRequestWithMultiParts(
+  public static void iSendRequestWithMultiParts(
       final String httpMethod, final String baseUrl, final String endpoint) {
     response = sendRequest(httpMethod, baseUrl, endpoint);
   }
 
   @When("I send a {string} request to {string} endpoint {string} with JSON payload {string}")
-  public void iSendRequestWithPayloadFile(
+  public static void iSendRequestWithPayloadFile(
       final String httpMethod, final String baseUrl, final String endpoint, final String filePath) {
     response = sendRequest(httpMethod, baseUrl, endpoint, null, null, null, filePath);
   }
 
   @When(
       "I send a {string} request to {string} endpoint {string} with JSON payload {string} and query params")
-  public void iSendRequestWithPayloadFileAndQueryParams(
+  public static void iSendRequestWithPayloadFileAndQueryParams(
       final String httpMethod,
       final String baseUrl,
       final String endpoint,
@@ -149,88 +144,96 @@ public class ApiSteps {
   }
 
   @When("I send a {string} request to endpoint {string}")
-  public void iSendRequest(final String httpMethod, final String endpoint) {
+  public static void iSendRequest(final String httpMethod, final String endpoint) {
     response = sendRequest(httpMethod, baseUrl, endpoint);
   }
 
   @When("I send a {string} request to endpoint {string} with JSON payload {string}")
-  public void iSendRequestWithPayloadFile(
+  public static void iSendRequestWithPayloadFile(
       final String httpMethod, final String endpoint, final String filePath) {
     response = sendRequest(httpMethod, baseUrl, endpoint, null, null, null, filePath);
   }
 
   @Then("the response body should contain {string}")
-  public void theResponseBodyShouldContain(final String text) {
+  public static void theResponseBodyShouldContain(final String text) {
     response.then().body(containsString(replaceTestVariables(text)));
   }
 
   @Then("the response body should be equal JSON {string}")
-  public void theResponseBodyShouldBeEqual(final String filePath) throws IOException {
+  public static void theResponseBodyShouldBeEqual(final String filePath) throws IOException {
     response.then().body(equalTo(getJsonAsString(filePath)));
   }
 
   @Then("the response status code should be {int}")
-  public void theResponseStatusCodeShouldBe(int statusCode) {
+  public static void theResponseStatusCodeShouldBe(int statusCode) {
     response.then().statusCode(statusCode);
   }
 
   @Then("the response status code should be {string}")
-  public void theResponseStatusCodeShouldBe(final String statusCode) {
+  public static void theResponseStatusCodeShouldBe(final String statusCode) {
     response.then().statusCode(Integer.parseInt(statusCode));
   }
 
   @Then("the JSON path {string} should be {string}")
-  public void theJsonPathShouldBe(final String jsonPath, final String expectedValue) {
+  public static void theJsonPathShouldBe(final String jsonPath, final String expectedValue) {
     response.then().body(jsonPath, equalTo(expectedValue));
   }
 
   @Then("the JSON path {string} should be number {double}")
-  public void theJsonPathShouldBeNumber(final String jsonPath, final double expectedValue) {
+  public static void theJsonPathShouldBeNumber(final String jsonPath, final double expectedValue) {
     response.then().body(jsonPath, equalTo(expectedValue));
   }
 
   @Then("the JSON path {string} should exist")
-  public void theJsonPathShouldExist(final String jsonPath) {
+  public static void theJsonPathShouldExist(final String jsonPath) {
     response.then().body(jsonPath, notNullValue());
   }
 
   @Then("the JSON path {string} should not exist")
-  public void theJsonPathShouldNotExist(final String jsonPath) {
+  public static void theJsonPathShouldNotExist(final String jsonPath) {
     response.then().body(jsonPath, nullValue());
   }
 
   /** HELPERS METHODS * */
-  private void setBaseUrl(final String baseUrl) {
+  public static String getJsonAsString(final String filePath) throws IOException {
+    try {
+      return new String(Files.readAllBytes(Paths.get("src/test/resources/payloads/" + filePath)));
+    } catch (IOException e) {
+      throw new RuntimeException("Error reading payload file: " + filePath, e);
+    }
+  }
+
+  public static void setBaseUrl(final String baseUrl) {
     final String processedBaseUrl = firstNonNull(EnvConfig.get(baseUrl), baseUrl);
-    this.baseUrl = processedBaseUrl;
+    ApiSteps.baseUrl = processedBaseUrl;
     RestAssured.baseURI = processedBaseUrl;
   }
 
-  private void setEndpoint(final String endpoint) {
+  public static void setEndpoint(final String endpoint) {
     final String processedEndpoint = replaceTestVariables(endpoint);
-    this.endpoint = processedEndpoint;
+    ApiSteps.endpoint = processedEndpoint;
     RestAssured.basePath = processedEndpoint;
   }
 
-  private void setHeaders(final Map<String, String> headers) {
+  public static void setHeaders(final Map<String, String> headers) {
     if (headers != null) {
       request.headers(replaceMapTestVariables(headers));
     }
   }
 
-  private void setQueryParams(final Map<String, String> queryParams) {
+  public static void setQueryParams(final Map<String, String> queryParams) {
     if (queryParams != null) {
       request.queryParams(replaceMapTestVariables(queryParams));
     }
   }
 
-  private void setFormParams(final Map<String, String> formParams) {
+  public static void setFormParams(final Map<String, String> formParams) {
     if (formParams != null) {
       request.formParams(replaceMapTestVariables(formParams));
     }
   }
 
-  private void setJsonBody(final String filePath) {
+  public static void setJsonBody(final String filePath) {
     if (filePath != null) {
       try {
         requestBody = replaceTestVariables(getJsonAsString(filePath));
@@ -241,12 +244,12 @@ public class ApiSteps {
     }
   }
 
-  private Response sendRequest(
+  public static Response sendRequest(
       final String httpMethod, final String baseUrl, final String endpoint) {
     return sendRequest(httpMethod, baseUrl, endpoint, null, null, null, null);
   }
 
-  private Response sendRequest(
+  public static Response sendRequest(
       final String httpMethod,
       final String baseUrl,
       final String endpoint,
@@ -262,7 +265,7 @@ public class ApiSteps {
     setQueryParams(queryParams);
     setFormParams(formParams);
     setJsonBody(filePathAsJsonBody);
-    final String uri = this.baseUrl + this.endpoint;
+    final String uri = ApiSteps.baseUrl + ApiSteps.endpoint;
     switch (httpMethod.toUpperCase()) {
       case "GET":
         response = request.when().get(uri);
@@ -288,14 +291,16 @@ public class ApiSteps {
     return response;
   }
 
-  private void logRequestResponse() {
-    scenario.log(
+  public static void logRequestResponse() {
+    final String loggedRequest =
         "---------------------------------- Captured Request ----------------------------\n"
             + outputStream
-            + "\n--------------------------------------------------------------------------------");
+            + "\n--------------------------------------------------------------------------------";
+    System.out.println(loggedRequest);
+    scenario.log(loggedRequest);
   }
 
-  private void resetRequest() {
+  public static void resetRequest() {
     request = given().relaxedHTTPSValidation().log().all();
     request.config(RestAssured.config().logConfig(logConfigRequest)).log().all();
   }
